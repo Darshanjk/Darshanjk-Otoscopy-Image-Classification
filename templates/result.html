@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Result - Ear Disease Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .result-card {
+            transition: transform 0.3s ease;
+        }
+        .result-card:hover {
+            transform: scale(1.02);
+        }
+        .confidence-bar {
+            height: 24px;
+            border-radius: 12px;
+        }
+        .disease-info {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 mb-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Detection Result</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Image and Primary Result Section -->
+            <div class="col-md-6">
+                <div class="card result-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Analyzed Image</h5>
+                    </div>
+                    <div class="card-body">
+                        <img src="{{ url_for('static', filename=image_path) }}" 
+                             class="img-fluid rounded" 
+                             alt="Analyzed ear image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detection Results Section -->
+            <div class="col-md-6">
+                <div class="card result-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Detection Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="text-center mb-4">
+                            Detected Condition: 
+                            <span class="text-primary">{{ prediction }}
+                        </h3>
+
+                        <div class="confidence-section mb-4">
+                            <h5>Confidence Level</h5>
+                            <div class="progress confidence-bar">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" 
+                                     style="width: {{ confidence }}%"
+                                     aria-valuenow="{{ confidence }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ "%.2f"|format(confidence) }}%
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="disease-info">
+                            <h5>Condition Information:</h5>
+                            {% if prediction == "Acute Otitis Media" %}
+                                <p>Acute otitis media is a painful infection of the middle ear, usually caused by bacteria. Common symptoms include:</p>
+                                <ul>
+                                    <li>Ear pain</li>
+                                    <li>Fever</li>
+                                    <li>Difficulty sleeping</li>
+                                    <li>Irritability in young children</li>
+                                </ul>
+                            {% elif prediction == "Chronic Otitis Media" %}
+                                <p>Chronic otitis media is a long-term ear infection that may result in permanent changes to the ear. Characteristics include:</p>
+                                <ul>
+                                    <li>Persistent ear drainage</li>
+                                    <li>Hearing loss</li>
+                                    <li>Perforated eardrum</li>
+                                    <li>Recurring infections</li>
+                                </ul>
+                            {% elif prediction == "Earwax" %}
+                                <p>Excessive earwax buildup can cause:</p>
+                                <ul>
+                                    <li>Temporary hearing loss</li>
+                                    <li>Earache</li>
+                                    <li>Tinnitus (ringing in the ear)</li>
+                                    <li>Dizziness</li>
+                                </ul>
+                            {% elif prediction == "Otitis Externa" %}
+                                <p>Otitis externa (swimmer's ear) is an infection of the ear canal. Common symptoms include:</p>
+                                <ul>
+                                    <li>Ear pain that worsens when touching the ear</li>
+                                    <li>Itching in the ear canal</li>
+                                    <li>Discharge from the ear</li>
+                                    <li>Temporary hearing loss</li>
+                                </ul>
+                            {% else %}
+                                <p>No abnormal conditions detected. Your ear appears to be healthy.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-info mt-4" role="alert">
+                            <i class="fas fa-info-circle"></i> This is an AI-assisted diagnosis. Please consult a healthcare professional for proper medical diagnosis and treatment.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 mt-4">
+                    <a href="/" class="btn btn-primary">
+                        Analyze Another Image
+                    </a>
+                    <button class="btn btn-outline-secondary" onclick="window.print()">
+                        Print Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">General Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Do's:</h6>
+                        <ul>
+                            <li>Keep ears dry and clean</li>
+                            <li>Use ear protection when swimming</li>
+                            <li>Seek medical attention for persistent ear pain</li>
+                            <li>Complete full course of prescribed medications</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Don'ts:</h6>
+                        <ul>
+                            <li>Don't insert objects into ears</li>
+                            <li>Don't ignore persistent ear problems</li>
+                            <li>Don't use cotton swabs deep in the ear canal</li>
+                            <li>Don't expose ears to loud noises without protection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center text-muted py-3 mt-5">
+        <small>Disclaimer: This tool is for educational purposes only and should not replace professional medical advice.</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+</body>
+</html>
